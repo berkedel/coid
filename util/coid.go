@@ -28,8 +28,7 @@ func decompress(base64 string, start int) string {
 	}
 
 	uuid := []byte(uuidTemplate)
-	uuid[0] = base64[0]
-	uuid[1] = base64[1]
+	copy(uuid, base64[0:start])
 
 	var base64Values [123]byte
 	for i := 0; i < 123; i++ {
@@ -39,7 +38,12 @@ func decompress(base64 string, start int) string {
 		base64Values[base64Keys[i]] = byte(i)
 	}
 
-	for i, j := start, 2; i < 22; i = i + 2 {
+	offset := 0
+	if start == 5 {
+		offset = 1
+	}
+
+	for i, j := start, start; i < 22+offset; i = i + 2 {
 		lhs := base64Values[base64[i]]
 		rhs := base64Values[base64[i+1]]
 		uuid[indices[j]] = hexChars[lhs>>2]
