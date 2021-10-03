@@ -9,10 +9,17 @@ const (
 )
 
 func Decompress(base64 string) string {
-	if len(base64) != 22 {
+	length := len(base64)
+	if length == 22 {
+		return decompress(base64, 2)
+	} else if length == 23 {
+		return decompress(base64, 5)
+	} else {
 		return base64
 	}
+}
 
+func decompress(base64 string, start int) string {
 	indices := make([]byte, 0)
 	for i, v := range uuidTemplate {
 		if v != 45 {
@@ -32,7 +39,7 @@ func Decompress(base64 string) string {
 		base64Values[base64Keys[i]] = byte(i)
 	}
 
-	for i, j := 2, 2; i < 22; i = i + 2 {
+	for i, j := start, 2; i < 22; i = i + 2 {
 		lhs := base64Values[base64[i]]
 		rhs := base64Values[base64[i+1]]
 		uuid[indices[j]] = hexChars[lhs>>2]
